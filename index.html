@@ -23,7 +23,7 @@
           <p class="eyebrow"><span class="eyebrow-line"></span> BÀI TẬP ĐỌC NỐT</p>
           <h1 id="page-title">Mắt quen nốt,<br /><span>tay thành nhạc.</span></h1>
           <p class="intro-copy">
-            Mỗi lượt có một gợi ý: nốt trên khuông, tên nốt hoặc ký hiệu chữ cái. Hãy hoàn thành hai thông tin còn lại.
+            Mỗi lượt cho hình nốt hoặc ký hiệu chữ cái. Hãy nhập hay chọn thông tin còn lại.
           </p>
         </div>
 
@@ -50,9 +50,8 @@
               <div class="control-group">
                 <p class="section-label">CHỌN CHẾ ĐỘ HỌC</p>
                 <div class="study-picker" role="group" aria-label="Chọn chế độ học">
-                  <button class="study-choice" type="button" data-study-mode="note" aria-pressed="false">Nốt nhạc</button>
-                  <button class="study-choice" type="button" data-study-mode="name" aria-pressed="false">Tên nốt</button>
-                  <button class="study-choice" type="button" data-study-mode="letter" aria-pressed="false">Ký hiệu</button>
+                  <button class="study-choice" type="button" data-study-mode="note" aria-pressed="false">Hình nốt → ký hiệu</button>
+                  <button class="study-choice" type="button" data-study-mode="letter" aria-pressed="false">Ký hiệu → hình nốt</button>
                   <button class="study-choice is-active" type="button" data-study-mode="mixed" aria-pressed="true">Trộn</button>
                 </div>
               </div>
@@ -97,19 +96,6 @@
           </div>
 
           <form id="answer-form" novalidate>
-            <fieldset class="answer-section" id="note-options-fieldset">
-              <legend class="section-label" id="note-options-label">CHỌN TÊN NỐT</legend>
-              <div class="note-options" id="note-options">
-                <button type="button" class="note-option" data-note="C" aria-pressed="false">Đô</button>
-                <button type="button" class="note-option" data-note="D" aria-pressed="false">Rê</button>
-                <button type="button" class="note-option" data-note="E" aria-pressed="false">Mi</button>
-                <button type="button" class="note-option" data-note="F" aria-pressed="false">Fa</button>
-                <button type="button" class="note-option" data-note="G" aria-pressed="false">Sol</button>
-                <button type="button" class="note-option" data-note="A" aria-pressed="false">La</button>
-                <button type="button" class="note-option" data-note="B" aria-pressed="false">Si</button>
-              </div>
-            </fieldset>
-
             <fieldset class="answer-section pitch-answer-section" id="pitch-options-fieldset" hidden>
               <legend class="section-label">CHỌN HÌNH NỐT</legend>
               <div class="pitch-options" id="pitch-options" role="group" aria-label="Chọn hình nốt trên khuông"></div>
