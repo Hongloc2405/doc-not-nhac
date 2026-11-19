@@ -23,14 +23,15 @@
           <p class="eyebrow"><span class="eyebrow-line"></span> BÀI TẬP ĐỌC NỐT</p>
           <h1 id="page-title">Mắt quen nốt,<br /><span>tay thành nhạc.</span></h1>
           <p class="intro-copy">
-            Nhìn nốt nhạc trên khuông, chọn tên nốt và nhập ký hiệu chữ cái tương ứng.
+            Mỗi lượt có một gợi ý: nốt trên khuông, tên nốt hoặc ký hiệu chữ cái. Hãy hoàn thành hai thông tin còn lại.
           </p>
         </div>
 
         <section class="quiz-card" aria-label="Bài tập đọc nốt nhạc">
           <div class="card-top">
-            <div>
-              <p class="section-label">CHỌN KHÓA NHẠC</p>
+            <div class="control-stack">
+              <div class="control-group">
+                <p class="section-label">CHỌN KHÓA NHẠC</p>
               <div class="clef-picker" role="group" aria-label="Chọn khóa nhạc">
                 <button class="clef-choice is-active" type="button" data-clef="treble" aria-pressed="true">
                   <span class="clef-symbol" aria-hidden="true">𝄞</span>
@@ -45,16 +46,29 @@
                   <span>Trộn cả hai</span>
                 </button>
               </div>
+              </div>
+              <div class="control-group">
+                <p class="section-label">CHỌN CHẾ ĐỘ HỌC</p>
+                <div class="study-picker" role="group" aria-label="Chọn chế độ học">
+                  <button class="study-choice" type="button" data-study-mode="note" aria-pressed="false">Nốt nhạc</button>
+                  <button class="study-choice" type="button" data-study-mode="name" aria-pressed="false">Tên nốt</button>
+                  <button class="study-choice" type="button" data-study-mode="letter" aria-pressed="false">Ký hiệu</button>
+                  <button class="study-choice is-active" type="button" data-study-mode="mixed" aria-pressed="true">Trộn</button>
+                </div>
+              </div>
             </div>
             <div class="score" aria-label="Điểm số">
               <span class="score-caption">ĐIỂM</span>
               <span class="score-value" id="score">00</span>
+              <button class="review-button" id="review-button" type="button" disabled>
+                Ôn câu sai (0)
+              </button>
             </div>
           </div>
 
           <div class="staff-panel">
             <div class="staff-heading">
-              <span class="section-label">NỐT NHẠC CỦA BẠN</span>
+              <span class="section-label" id="staff-title">NỐT NHẠC ĐƯỢC CHO</span>
               <span class="question-count" id="question-count">CÂU 01</span>
             </div>
             <div class="staff-wrap">
@@ -76,15 +90,15 @@
                 <g id="ledger-lines" class="ledger-lines" aria-hidden="true"></g>
                 <line id="note-stem" class="note-stem" x1="309" y1="150" x2="309" y2="115" />
                 <ellipse id="note-head" class="note-head" cx="300" cy="150" rx="12" ry="8" />
-                <text id="staff-hint" class="staff-hint" x="282" y="205">?</text>
+                <text id="staff-hint" class="staff-hint" x="300" y="120" text-anchor="middle" visibility="hidden"></text>
               </svg>
             </div>
-            <p class="staff-caption">Nốt có thể nằm trên dòng kẻ hoặc ở khe giữa hai dòng.</p>
+            <p class="staff-caption" id="staff-caption">Nốt có thể nằm trên dòng kẻ hoặc ở khe giữa hai dòng.</p>
           </div>
 
           <form id="answer-form" novalidate>
-            <fieldset class="answer-section">
-              <legend class="section-label">1. NỐT NÀY TÊN LÀ GÌ?</legend>
+            <fieldset class="answer-section" id="note-options-fieldset">
+              <legend class="section-label" id="note-options-label">CHỌN TÊN NỐT</legend>
               <div class="note-options" id="note-options">
                 <button type="button" class="note-option" data-note="C" aria-pressed="false">Đô</button>
                 <button type="button" class="note-option" data-note="D" aria-pressed="false">Rê</button>
@@ -96,9 +110,14 @@
               </div>
             </fieldset>
 
+            <fieldset class="answer-section pitch-answer-section" id="pitch-options-fieldset" hidden>
+              <legend class="section-label">CHỌN HÌNH NỐT</legend>
+              <div class="pitch-options" id="pitch-options" role="group" aria-label="Chọn hình nốt trên khuông"></div>
+            </fieldset>
+
             <div class="answer-bottom">
-              <div class="letter-field">
-                <label class="section-label" for="letter-input">2. KÝ HIỆU CHỮ CÁI</label>
+              <div class="letter-field" id="letter-field">
+                <label class="section-label" for="letter-input" id="letter-label">NHẬP KÝ HIỆU CHỮ CÁI</label>
                 <div class="input-wrap">
                   <input
                     id="letter-input"
@@ -109,7 +128,7 @@
                     autocapitalize="characters"
                     spellcheck="false"
                     placeholder="?"
-                    aria-describedby="input-hint"
+                    aria-label="Nhập ký hiệu chữ cái"
                   />
                 </div>
               </div>
