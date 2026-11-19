@@ -15,10 +15,14 @@
           <span class="brand-mark" aria-hidden="true">♫</span>
           <span>nhịp<span class="brand-dot">.</span></span>
         </a>
+        <nav class="page-nav" aria-label="Điều hướng bài tập">
+          <a class="page-nav-link is-active" href="#practice-page" aria-current="page">Luyện từng nốt</a>
+          <a class="page-nav-link" href="#sheet-page">Sheet nhạc</a>
+        </nav>
         <span class="topbar-note">GÓC LUYỆN TẬP ÂM NHẠC</span>
       </header>
 
-      <section class="practice" aria-labelledby="page-title">
+      <section class="practice page-view" id="practice-page" aria-labelledby="page-title">
         <div class="intro">
           <p class="eyebrow"><span class="eyebrow-line"></span> BÀI TẬP ĐỌC NỐT</p>
           <h1 id="page-title">Mắt quen nốt,<br /><span>tay thành nhạc.</span></h1>
@@ -135,6 +139,48 @@
           <p>Đọc từ dưới lên: mỗi dòng và khe là một bậc của thang âm.</p>
           <span class="footer-note" aria-hidden="true">♪</span>
         </footer>
+      </section>
+
+      <section class="sheet-page page-view" id="sheet-page" aria-labelledby="sheet-title" hidden>
+        <div class="intro">
+          <p class="eyebrow"><span class="eyebrow-line"></span> LUYỆN ĐỌC CẢ KHUÔNG</p>
+          <h1 id="sheet-title">Đọc cả khuông,<br /><span>từng nốt một.</span></h1>
+          <p class="intro-copy">
+            Đọc các nốt trên sheet nhạc. Bật đáp án khi bạn muốn kiểm tra ký hiệu và tên của từng nốt.
+          </p>
+        </div>
+
+        <section class="sheet-card" aria-label="Sheet nhạc luyện tập">
+          <div class="sheet-toolbar">
+            <div class="sheet-clef-group">
+              <p class="section-label">CHỌN KHÓA NHẠC</p>
+              <div class="sheet-clef-picker" role="group" aria-label="Chọn khóa cho sheet nhạc">
+                <button class="sheet-clef-choice is-active" type="button" data-sheet-clef="treble" aria-pressed="true">Khóa Sol</button>
+                <button class="sheet-clef-choice" type="button" data-sheet-clef="bass" aria-pressed="false">Khóa Fa</button>
+                <button class="sheet-clef-choice" type="button" data-sheet-clef="mixed" aria-pressed="false">Kết hợp cả hai</button>
+              </div>
+            </div>
+            <div class="sheet-actions">
+              <button class="sheet-action secondary-action" id="toggle-sheet-answers" type="button" aria-pressed="false">
+                Hiện đáp án
+              </button>
+              <button class="sheet-action primary-action" id="generate-sheet" type="button">
+                Tạo sheet mới <span aria-hidden="true">↻</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="sheet-scroll">
+            <svg
+              class="music-sheet"
+              id="music-sheet"
+              viewBox="0 0 960 400"
+              role="img"
+              aria-label="Sheet nhạc ngẫu nhiên với hai khuông, đáp án đang ẩn"
+            ></svg>
+          </div>
+          <p class="sheet-caption">16 nốt · 4 ô nhịp · 2 khuông nhạc</p>
+        </section>
       </section>
     </main>
   </body>
