@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f2e9" />
+    <title>Đọc nốt nhạc — Luyện tập mỗi ngày</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Nhịp — Trang chủ">
+          <span class="brand-mark" aria-hidden="true">♫</span>
+          <span>nhịp<span class="brand-dot">.</span></span>
+        </a>
+        <span class="topbar-note">GÓC LUYỆN TẬP ÂM NHẠC</span>
+      </header>
+
+      <section class="practice" aria-labelledby="page-title">
+        <div class="intro">
+          <p class="eyebrow"><span class="eyebrow-line"></span> BÀI TẬP ĐỌC NỐT</p>
+          <h1 id="page-title">Mắt quen nốt,<br /><span>tay thành nhạc.</span></h1>
+          <p class="intro-copy">
+            Nhìn nốt nhạc trên khuông, chọn tên nốt và nhập ký hiệu chữ cái tương ứng.
+          </p>
+        </div>
+
+        <section class="quiz-card" aria-label="Bài tập đọc nốt nhạc">
+          <div class="card-top">
+            <div>
+              <p class="section-label">CHỌN KHÓA NHẠC</p>
+              <div class="clef-picker" role="group" aria-label="Chọn khóa nhạc">
+                <button class="clef-choice is-active" type="button" data-clef="treble" aria-pressed="true">
+                  <span class="clef-symbol" aria-hidden="true">𝄞</span>
+                  <span>Khóa Sol</span>
+                </button>
+                <button class="clef-choice" type="button" data-clef="bass" aria-pressed="false">
+                  <span class="clef-symbol bass-symbol" aria-hidden="true">𝄢</span>
+                  <span>Khóa Fa</span>
+                </button>
+                <button class="clef-choice" type="button" data-clef="mixed" aria-pressed="false">
+                  <span class="mix-symbol" aria-hidden="true">S/F</span>
+                  <span>Trộn cả hai</span>
+                </button>
+              </div>
+            </div>
+            <div class="score" aria-label="Điểm số">
+              <span class="score-caption">ĐIỂM</span>
+              <span class="score-value" id="score">00</span>
+            </div>
+          </div>
+
+          <div class="staff-panel">
+            <div class="staff-heading">
+              <span class="section-label">NỐT NHẠC CỦA BẠN</span>
+              <span class="question-count" id="question-count">CÂU 01</span>
+            </div>
+            <div class="staff-wrap">
+              <svg
+                id="staff"
+                class="staff"
+                viewBox="0 0 520 250"
+                role="img"
+                aria-label="Khuông nhạc với một nốt cần nhận diện"
+              >
+                <g class="staff-lines" aria-hidden="true">
+                  <line x1="72" y1="70" x2="490" y2="70" />
+                  <line x1="72" y1="90" x2="490" y2="90" />
+                  <line x1="72" y1="110" x2="490" y2="110" />
+                  <line x1="72" y1="130" x2="490" y2="130" />
+                  <line x1="72" y1="150" x2="490" y2="150" />
+                </g>
+                <text id="clef-glyph" class="clef-glyph" x="83" y="146" aria-hidden="true">𝄞</text>
+                <g id="ledger-lines" class="ledger-lines" aria-hidden="true"></g>
+                <line id="note-stem" class="note-stem" x1="309" y1="150" x2="309" y2="115" />
+                <ellipse id="note-head" class="note-head" cx="300" cy="150" rx="12" ry="8" />
+                <text id="staff-hint" class="staff-hint" x="282" y="205">?</text>
+              </svg>
+            </div>
+            <p class="staff-caption">Nốt có thể nằm trên dòng kẻ hoặc ở khe giữa hai dòng.</p>
+          </div>
+
+          <form id="answer-form" novalidate>
+            <fieldset class="answer-section">
+              <legend class="section-label">1. NỐT NÀY TÊN LÀ GÌ?</legend>
+              <div class="note-options" id="note-options">
+                <button type="button" class="note-option" data-note="C" aria-pressed="false">Đô</button>
+                <button type="button" class="note-option" data-note="D" aria-pressed="false">Rê</button>
+                <button type="button" class="note-option" data-note="E" aria-pressed="false">Mi</button>
+                <button type="button" class="note-option" data-note="F" aria-pressed="false">Fa</button>
+                <button type="button" class="note-option" data-note="G" aria-pressed="false">Sol</button>
+                <button type="button" class="note-option" data-note="A" aria-pressed="false">La</button>
+                <button type="button" class="note-option" data-note="B" aria-pressed="false">Si</button>
+              </div>
+            </fieldset>
+
+            <div class="answer-bottom">
+              <div class="letter-field">
+                <label class="section-label" for="letter-input">2. KÝ HIỆU CHỮ CÁI</label>
+                <div class="input-wrap">
+                  <input
+                    id="letter-input"
+                    name="letter"
+                    type="text"
+                    maxlength="1"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    placeholder="?"
+                    aria-describedby="input-hint"
+                  />
+                </div>
+              </div>
+              <button class="submit-button" id="submit-button" type="submit">
+                Kiểm tra đáp án <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </form>
+
+          <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
+          <button class="next-button" id="next-button" type="button" hidden>
+            Nốt tiếp theo <span aria-hidden="true">→</span>
+          </button>
+        </section>
+
+        <footer class="page-footer">
+          <span>MẸO NHỎ</span>
+          <p>Đọc từ dưới lên: mỗi dòng và khe là một bậc của thang âm.</p>
+          <span class="footer-note" aria-hidden="true">♪</span>
+        </footer>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,607 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap");
+
+:root {
+  color-scheme: light;
+  --paper: #f5f2e9;
+  --card: #fffefa;
+  --ink: #1e302d;
+  --muted: #78827b;
+  --green: #245c4b;
+  --green-dark: #194739;
+  --mint: #e8f0e9;
+  --line: #dce1d8;
+  --orange: #e6a14a;
+  --red: #b94d3b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 2% 12%, rgb(230 225 207 / 43%), transparent 29rem),
+    var(--paper);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+.app-shell {
+  width: min(100% - 64px, 1120px);
+  margin: 0 auto;
+}
+
+.topbar {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(30 48 45 / 10%);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -1.2px;
+  text-decoration: none;
+}
+
+.brand-mark {
+  color: var(--green);
+  font-size: 29px;
+  line-height: 1;
+}
+
+.brand-dot {
+  color: var(--orange);
+}
+
+.topbar-note,
+.eyebrow,
+.section-label,
+.score-caption,
+.question-count,
+.page-footer > span:first-child {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.35px;
+}
+
+.topbar-note {
+  color: var(--muted);
+}
+
+.practice {
+  width: min(100%, 700px);
+  margin: 53px auto 38px;
+}
+
+.intro {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 15px;
+  color: var(--green);
+}
+
+.eyebrow-line {
+  width: 24px;
+  height: 1px;
+  background: var(--orange);
+}
+
+h1 {
+  margin: 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(38px, 6vw, 55px);
+  font-weight: 600;
+  letter-spacing: -1.6px;
+  line-height: 1.1;
+}
+
+h1 span {
+  color: var(--green);
+  font-style: italic;
+}
+
+.intro-copy {
+  max-width: 490px;
+  margin: 15px 0 0;
+  color: #64716a;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.quiz-card {
+  padding: 26px 30px 25px;
+  border: 1px solid #e8e7dd;
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 15px 48px rgb(52 62 45 / 6%);
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.section-label {
+  display: block;
+  margin: 0;
+  color: #59665f;
+}
+
+.clef-picker {
+  display: flex;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 4px;
+  border-radius: 7px;
+  background: #f2f3ed;
+}
+
+.clef-choice {
+  min-height: 37px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #65716a;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.clef-choice:hover {
+  color: var(--green-dark);
+}
+
+.clef-choice.is-active {
+  background: var(--card);
+  color: var(--green-dark);
+  box-shadow: 0 1px 5px rgb(30 48 45 / 11%);
+}
+
+.clef-symbol {
+  font-family: "Noto Music", "Segoe UI Symbol", serif;
+  font-size: 19px;
+  line-height: 1;
+}
+
+.bass-symbol {
+  font-size: 18px;
+}
+
+.mix-symbol {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.score {
+  min-width: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  padding-top: 1px;
+}
+
+.score-caption {
+  color: #879089;
+  font-size: 9px;
+}
+
+.score-value {
+  color: var(--green);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.staff-panel {
+  margin-top: 25px;
+  padding: 16px 18px 12px;
+  border-radius: 8px;
+  background: #f8f8f2;
+}
+
+.staff-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.staff-heading .section-label {
+  font-size: 9px;
+}
+
+.question-count {
+  color: #919990;
+  font-size: 9px;
+}
+
+.staff-wrap {
+  margin-top: 5px;
+}
+
+.staff {
+  width: 100%;
+  display: block;
+  height: auto;
+  overflow: visible;
+}
+
+.staff-lines line {
+  stroke: #53625a;
+  stroke-width: 1.15;
+}
+
+.clef-glyph {
+  fill: var(--green);
+  font-family: "Noto Music", "Segoe UI Symbol", "DejaVu Sans", serif;
+  font-size: 104px;
+}
+
+.ledger-lines line {
+  stroke: #53625a;
+  stroke-width: 1.1;
+}
+
+.note-stem {
+  stroke: var(--green-dark);
+  stroke-width: 1.8;
+}
+
+.note-head {
+  fill: var(--green-dark);
+  stroke: var(--green-dark);
+  stroke-width: 1;
+  transform: rotate(-20deg);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.staff-hint {
+  fill: #b0b8ae;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 29px;
+  font-style: italic;
+}
+
+.staff-caption {
+  margin: -1px 0 0;
+  color: #899189;
+  font-size: 10px;
+  text-align: center;
+}
+
+.answer-section {
+  min-width: 0;
+  margin: 23px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.answer-section legend {
+  padding: 0;
+}
+
+.note-options {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.note-option {
+  min-height: 43px;
+  border: 1px solid #e3e7df;
+  border-radius: 6px;
+  background: #fff;
+  color: #47574f;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.note-option:hover {
+  border-color: #9eb4a4;
+  transform: translateY(-1px);
+}
+
+.note-option.is-selected {
+  border-color: var(--green);
+  background: var(--mint);
+  color: var(--green-dark);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.answer-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 21px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 9px;
+}
+
+.input-wrap input {
+  width: 54px;
+  height: 43px;
+  border: 1px solid #dfe4dc;
+  border-radius: 6px;
+  outline: 0;
+  background: #fff;
+  color: var(--green-dark);
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.input-wrap input:focus {
+  border-color: #709581;
+  box-shadow: 0 0 0 3px rgb(36 92 75 / 10%);
+}
+
+.input-hint {
+  color: #899189;
+  font-size: 10px;
+}
+
+.submit-button {
+  min-height: 43px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--green);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.submit-button:hover {
+  background: var(--green-dark);
+  transform: translateY(-1px);
+}
+
+.submit-button span {
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.feedback {
+  margin-top: 17px;
+  padding: 11px 13px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.feedback.is-correct {
+  background: #edf5ed;
+  color: #245c4b;
+}
+
+.feedback.is-incorrect,
+.feedback.is-incomplete {
+  background: #fbf0e8;
+  color: #8d5033;
+}
+
+.feedback strong {
+  font-weight: 700;
+}
+
+.next-button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 0 15px;
+  border: 1px solid #cbd9ce;
+  border-radius: 6px;
+  background: #f4f8f3;
+  color: var(--green-dark);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.next-button[hidden] {
+  display: none;
+}
+
+.next-button:hover {
+  border-color: #9eb4a4;
+  background: var(--mint);
+}
+
+.next-button span {
+  font-size: 16px;
+}
+
+.page-footer {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 17px 5px 0;
+}
+
+.page-footer > span:first-child {
+  color: #a2733b;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.page-footer p {
+  margin: 0;
+  color: #818a81;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.footer-note {
+  margin-left: auto;
+  color: #b6a887;
+  font-size: 20px;
+}
+
+button:focus-visible {
+  outline: 3px solid rgb(230 161 74 / 70%);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .app-shell {
+    width: min(100% - 32px, 440px);
+  }
+
+  .topbar {
+    height: 66px;
+  }
+
+  .topbar-note {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .practice {
+    margin-top: 35px;
+  }
+
+  .intro {
+    margin-bottom: 22px;
+  }
+
+  h1 {
+    font-size: clamp(37px, 10vw, 48px);
+  }
+
+  .intro-copy {
+    font-size: 13px;
+  }
+
+  .quiz-card {
+    padding: 20px 16px;
+  }
+
+  .card-top {
+    gap: 10px;
+  }
+
+  .clef-picker {
+    gap: 2px;
+  }
+
+  .clef-choice {
+    min-height: 35px;
+    gap: 5px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .clef-symbol {
+    font-size: 16px;
+  }
+
+  .score {
+    min-width: 39px;
+  }
+
+  .staff-panel {
+    margin-top: 20px;
+    padding: 14px 10px 11px;
+  }
+
+  .staff-caption {
+    font-size: 9px;
+  }
+
+  .note-options {
+    gap: 5px;
+  }
+
+  .note-option {
+    min-height: 40px;
+    font-size: 12px;
+  }
+
+  .answer-bottom {
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .input-hint {
+    max-width: 115px;
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  .submit-button {
+    gap: 7px;
+    padding: 0 11px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .page-footer {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
