@@ -27,6 +27,7 @@ const CLEFS = {
 };
 
 const clefButtons = [...document.querySelectorAll(".clef-choice")];
+const studyButtons = [...document.querySelectorAll(".study-choice")];
 const noteButtons = [...document.querySelectorAll(".note-option")];
 const noteHead = document.querySelector("#note-head");
 const noteStem = document.querySelector("#note-stem");
@@ -34,18 +35,34 @@ const ledgerLines = document.querySelector("#ledger-lines");
 const clefGlyph = document.querySelector("#clef-glyph");
 const staffHint = document.querySelector("#staff-hint");
 const staff = document.querySelector("#staff");
+const staffTitle = document.querySelector("#staff-title");
+const staffCaption = document.querySelector("#staff-caption");
 const answerForm = document.querySelector("#answer-form");
+const noteOptionsFieldset = document.querySelector("#note-options-fieldset");
+const noteOptionsLabel = document.querySelector("#note-options-label");
+const pitchOptionsFieldset = document.querySelector("#pitch-options-fieldset");
+const pitchOptions = document.querySelector("#pitch-options");
+const letterField = document.querySelector("#letter-field");
 const letterInput = document.querySelector("#letter-input");
 const feedback = document.querySelector("#feedback");
 const nextButton = document.querySelector("#next-button");
+const reviewButton = document.querySelector("#review-button");
 const scoreDisplay = document.querySelector("#score");
 const questionCount = document.querySelector("#question-count");
 
 let selectedClef = "treble";
+let selectedStudyMode = "mixed";
 let currentNote = null;
+let questionType = "note";
 let selectedAnswer = "";
+let selectedStep = null;
 let score = 0;
 let questionNumber = 1;
+let missedQuestions = [];
+let currentReviewQuestion = null;
+let nextMissedQuestionId = 1;
+let isReviewing = false;
+let currentQuestionWasMissed = false;
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -57,29 +74,25 @@ function pitchAtStep(step) {
   return { letter: NOTE_LETTERS[letterIndex], octave };
 }
 
-function renderNote() {
-  const clefKey = selectedClef === "mixed"
-    ? (Math.random() < 0.5 ? "treble" : "bass")
-    : selectedClef;
-  const clef = CLEFS[clefKey];
-  const step = randomInt(clef.minStep, clef.maxStep);
-  const note = pitchAtStep(step);
+function hideStaffNote() {
+  noteHead.setAttribute("visibility", "hidden");
+  noteStem.setAttribute("visibility", "hidden");
+  ledgerLines.replaceChildren();
+}
+
+function renderStaffPitch(step) {
+  const clef = CLEFS[currentNote.clef];
   const y = 150 - (step - clef.bottomStaffStep) * 10;
   const stemUp = y >= 110;
   const stemX = stemUp ? 309 : 291;
 
-  currentNote = { ...note, clef: clefKey };
   noteHead.setAttribute("cy", String(y));
   noteStem.setAttribute("x1", String(stemX));
   noteStem.setAttribute("x2", String(stemX));
   noteStem.setAttribute("y1", String(y));
   noteStem.setAttribute("y2", String(y + (stemUp ? -35 : 35)));
-  clefGlyph.textContent = clef.glyph;
-  staff.setAttribute(
-    "aria-label",
-    `${clef.name}, nốt nhạc trên khuông cần nhận diện`,
-  );
-  staffHint.setAttribute("visibility", "hidden");
+  noteHead.setAttribute("visibility", "visible");
+  noteStem.setAttribute("visibility", "visible");
 
   const extraLines = [];
   for (let lineY = 50; lineY >= 10; lineY -= 20) {
@@ -101,17 +114,171 @@ function renderNote() {
   );
 }
 
+function createPitchImage(step, clef) {
+  const namespace = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(namespace, "svg");
+  const centerStep = currentNote.octave * 7 + 3;
+  const offsetY = 34 - (50 - (centerStep - clef.bottomStaffStep) * 3.2);
+  const bottomY = 50 + offsetY;
+  const topY = bottomY - 25.6;
+  const y = 50 - (step - clef.bottomStaffStep) * 3.2 + offsetY;
+  const clefText = document.createElementNS(namespace, "text");
+
+  svg.setAttribute("viewBox", "0 0 76 92");
+  svg.setAttribute("aria-hidden", "true");
+
+  const staffGroup = document.createElementNS(namespace, "g");
+  staffGroup.setAttribute("class", "pitch-staff-lines");
+  for (let index = 0; index < 5; index += 1) {
+    const line = document.createElementNS(namespace, "line");
+    const lineY = bottomY - index * 6.4;
+    line.setAttribute("x1", "14");
+    line.setAttribute("x2", "73");
+    line.setAttribute("y1", String(lineY));
+    line.setAttribute("y2", String(lineY));
+    staffGroup.append(line);
+  }
+  svg.append(staffGroup);
+
+  const ledgerGroup = document.createElementNS(namespace, "g");
+  ledgerGroup.setAttribute("class", "pitch-ledger-lines");
+  const ledgerYPositions = [];
+  for (let lineY = topY - 6.4; lineY >= y - 1; lineY -= 12.8) {
+    ledgerYPositions.push(lineY);
+  }
+  for (let lineY = bottomY + 6.4; lineY <= y + 1; lineY += 12.8) {
+    ledgerYPositions.push(lineY);
+  }
+  ledgerYPositions.forEach((lineY) => {
+    const line = document.createElementNS(namespace, "line");
+    line.setAttribute("x1", "49");
+    line.setAttribute("x2", "63");
+    line.setAttribute("y1", String(lineY));
+    line.setAttribute("y2", String(lineY));
+    ledgerGroup.append(line);
+  });
+  svg.append(ledgerGroup);
+
+  clefText.setAttribute("class", "pitch-clef");
+  clefText.setAttribute("x", "2");
+  clefText.setAttribute("y", String(bottomY + 1));
+  clefText.setAttribute("font-size", "28");
+  clefText.textContent = clef.glyph;
+  svg.append(clefText);
+
+  const stemUp = y >= (topY + bottomY) / 2;
+  const stemX = stemUp ? 58 : 52;
+  const stem = document.createElementNS(namespace, "line");
+  stem.setAttribute("class", "pitch-stem");
+  stem.setAttribute("x1", String(stemX));
+  stem.setAttribute("x2", String(stemX));
+  stem.setAttribute("y1", String(y));
+  stem.setAttribute("y2", String(y + (stemUp ? -12 : 12)));
+  svg.append(stem);
+
+  const head = document.createElementNS(namespace, "ellipse");
+  head.setAttribute("class", "pitch-note-head");
+  head.setAttribute("cx", "55");
+  head.setAttribute("cy", String(y));
+  head.setAttribute("rx", "4.5");
+  head.setAttribute("ry", "3.2");
+  head.setAttribute("transform", `rotate(-20 55 ${y})`);
+  svg.append(head);
+
+  return svg;
+}
+
+function renderPitchOptions() {
+  const clef = CLEFS[currentNote.clef];
+  const firstStep = currentNote.octave * 7;
+  const options = Array.from({ length: 7 }, (_, index) => {
+    const step = firstStep + index;
+    const note = pitchAtStep(step);
+    const button = document.createElement("button");
+    button.className = "pitch-option";
+    button.type = "button";
+    button.dataset.step = String(step);
+    button.setAttribute("aria-pressed", "false");
+    button.setAttribute(
+      "aria-label",
+      `Chọn nốt ${NOTE_NAMES[note.letter]} quãng tám ${note.octave} trên ${clef.name}`,
+    );
+    button.append(createPitchImage(step, clef));
+    return button;
+  });
+  pitchOptions.replaceChildren(...options);
+}
+
+function renderNote() {
+  const clefKey = selectedClef === "mixed"
+    ? (Math.random() < 0.5 ? "treble" : "bass")
+    : selectedClef;
+  const clef = CLEFS[clefKey];
+  const step = randomInt(clef.minStep, clef.maxStep);
+  const type = selectedStudyMode === "mixed"
+    ? ["note", "name", "letter"][randomInt(0, 2)]
+    : selectedStudyMode;
+  presentQuestion({ clef: clefKey, step, type });
+}
+
+function presentQuestion(question) {
+  const { clef: clefKey, step } = question;
+  const clef = CLEFS[clefKey];
+  const note = pitchAtStep(step);
+  questionType = question.type;
+  currentNote = { ...note, clef: clefKey, step };
+  currentQuestionWasMissed = false;
+  clefGlyph.textContent = clef.glyph;
+  noteOptionsFieldset.hidden = questionType === "name";
+  pitchOptionsFieldset.hidden = questionType === "note";
+  letterField.hidden = questionType === "letter";
+  noteOptionsLabel.textContent = "CHỌN TÊN NỐT";
+
+  staff.classList.remove("is-interactive");
+  staff.setAttribute("role", "img");
+  staff.removeAttribute("tabindex");
+  if (questionType === "note") {
+    staffTitle.textContent = "NỐT NHẠC ĐƯỢC CHO";
+    staffCaption.textContent = "Hãy nhận diện nốt trên dòng kẻ hoặc khe nhạc.";
+    staff.classList.remove("is-interactive");
+    staff.setAttribute("role", "img");
+    staff.removeAttribute("tabindex");
+    staff.setAttribute("aria-label", `${clef.name}, nốt nhạc cần nhận diện`);
+    staffHint.setAttribute("visibility", "hidden");
+    renderStaffPitch(step);
+  } else {
+    const clue = questionType === "name" ? NOTE_NAMES[note.letter] : note.letter;
+    staffTitle.textContent = questionType === "name" ? "TÊN NỐT ĐƯỢC CHO" : "KÝ HIỆU ĐƯỢC CHO";
+    staffCaption.textContent = "Chọn hình nốt tương ứng trong bảy lựa chọn bên dưới.";
+    staff.setAttribute("aria-label", `${clef.name}, gợi ý ${clue}`);
+    hideStaffNote();
+    staffHint.textContent = clue;
+    staffHint.setAttribute("visibility", "visible");
+    renderPitchOptions();
+  }
+}
+
+function clearFeedback() {
+  feedback.hidden = true;
+  feedback.textContent = "";
+  feedback.className = "feedback";
+}
+
 function clearAnswer() {
   selectedAnswer = "";
+  selectedStep = null;
   noteButtons.forEach((button) => {
     button.classList.remove("is-selected");
     button.setAttribute("aria-pressed", "false");
   });
+  pitchOptions.querySelectorAll(".pitch-option").forEach((button) => {
+    button.classList.remove("is-selected");
+    button.setAttribute("aria-pressed", "false");
+    button.disabled = false;
+  });
   letterInput.value = "";
   letterInput.removeAttribute("aria-invalid");
-  feedback.hidden = true;
-  feedback.textContent = "";
-  feedback.className = "feedback";
+  clearFeedback();
   nextButton.hidden = true;
   noteButtons.forEach((button) => {
     button.disabled = false;
@@ -120,15 +287,47 @@ function clearAnswer() {
   document.querySelector("#submit-button").disabled = false;
 }
 
+function updateReviewButton() {
+  const count = missedQuestions.length;
+  reviewButton.textContent = `Ôn câu sai (${count})`;
+  reviewButton.disabled = count === 0;
+  reviewButton.setAttribute(
+    "aria-label",
+    count === 0 ? "Chưa có câu sai để ôn lại" : `Ôn lại ${count} câu đã làm sai`,
+  );
+}
+
 function nextQuestion() {
   questionNumber += 1;
   questionCount.textContent = `CÂU ${String(questionNumber).padStart(2, "0")}`;
   clearAnswer();
+
+  if (isReviewing && missedQuestions.length > 0) {
+    currentReviewQuestion = missedQuestions[0];
+    presentQuestion(currentReviewQuestion);
+    return;
+  }
+
+  isReviewing = false;
+  currentReviewQuestion = null;
+  updateReviewButton();
   renderNote();
+}
+
+function startReview() {
+  if (missedQuestions.length === 0) return;
+  isReviewing = true;
+  currentReviewQuestion = missedQuestions[0];
+  questionNumber += 1;
+  questionCount.textContent = `CÂU ${String(questionNumber).padStart(2, "0")}`;
+  clearAnswer();
+  presentQuestion(currentReviewQuestion);
 }
 
 clefButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    isReviewing = false;
+    currentReviewQuestion = null;
     selectedClef = button.dataset.clef;
     clefButtons.forEach((choice) => {
       const isActive = choice === button;
@@ -139,7 +338,34 @@ clefButtons.forEach((button) => {
   });
 });
 
+studyButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    isReviewing = false;
+    currentReviewQuestion = null;
+    selectedStudyMode = button.dataset.studyMode;
+    studyButtons.forEach((choice) => {
+      const isActive = choice === button;
+      choice.classList.toggle("is-active", isActive);
+      choice.setAttribute("aria-pressed", String(isActive));
+    });
+    nextQuestion();
+  });
+});
+
 nextButton.addEventListener("click", nextQuestion);
+reviewButton.addEventListener("click", startReview);
+
+pitchOptions.addEventListener("click", (event) => {
+  const button = event.target.closest(".pitch-option");
+  if (!button || !feedback.hidden) return;
+  selectedStep = Number(button.dataset.step);
+  pitchOptions.querySelectorAll(".pitch-option").forEach((choice) => {
+    const isSelected = choice === button;
+    choice.classList.toggle("is-selected", isSelected);
+    choice.setAttribute("aria-pressed", String(isSelected));
+  });
+  clearFeedback();
+});
 
 noteButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -149,7 +375,7 @@ noteButtons.forEach((button) => {
       choice.classList.toggle("is-selected", isSelected);
       choice.setAttribute("aria-pressed", String(isSelected));
     });
-    if (!feedback.hidden) clearAnswer();
+    clearFeedback();
     selectedAnswer = button.dataset.note;
     button.classList.add("is-selected");
     button.setAttribute("aria-pressed", "true");
@@ -159,45 +385,81 @@ noteButtons.forEach((button) => {
 letterInput.addEventListener("input", () => {
   letterInput.value = letterInput.value.replace(/[^a-g]/gi, "").slice(0, 1).toUpperCase();
   letterInput.removeAttribute("aria-invalid");
-  if (!feedback.hidden) {
-    feedback.hidden = true;
-    feedback.textContent = "";
-    feedback.className = "feedback";
-  }
+  clearFeedback();
 });
 
 answerForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const enteredLetter = letterInput.value.trim().toUpperCase();
+  const needsName = questionType !== "name";
+  const needsPosition = questionType !== "note";
+  const needsLetter = questionType !== "letter";
+  const missing = [];
 
-  if (!selectedAnswer || !enteredLetter) {
+  if (needsName && !selectedAnswer) missing.push("chọn tên nốt");
+  if (needsPosition && selectedStep === null) missing.push("chọn vị trí nốt trên khuông");
+  if (needsLetter && !enteredLetter) missing.push("nhập ký hiệu chữ cái");
+
+  if (missing.length > 0) {
     feedback.className = "feedback is-incomplete";
-    feedback.textContent = !selectedAnswer && !enteredLetter
-      ? "Hãy chọn tên nốt và nhập ký hiệu chữ cái trước khi kiểm tra."
-      : !selectedAnswer
-        ? "Bạn hãy chọn tên nốt trước nhé."
-        : "Bạn hãy nhập ký hiệu chữ cái của nốt nhé.";
+    feedback.textContent = `Hãy ${missing.join(", ")} trước khi kiểm tra.`;
     feedback.hidden = false;
-    if (!enteredLetter) {
+    if (needsLetter && !enteredLetter) {
       letterInput.setAttribute("aria-invalid", "true");
     }
     return;
   }
 
-  const isCorrect = selectedAnswer === currentNote.letter
-    && enteredLetter === currentNote.letter;
+  const isCorrect = (!needsName || selectedAnswer === currentNote.letter)
+    && (!needsPosition || selectedStep === currentNote.step)
+    && (!needsLetter || enteredLetter === currentNote.letter);
   feedback.className = `feedback ${isCorrect ? "is-correct" : "is-incorrect"}`;
+  const pitchName = `${NOTE_NAMES[currentNote.letter]} (${currentNote.letter}${currentNote.octave})`;
 
   if (isCorrect) {
     score += 1;
     scoreDisplay.textContent = String(score).padStart(2, "0");
-    feedback.innerHTML = `<strong>Chính xác!</strong> Đây là nốt ${NOTE_NAMES[currentNote.letter]} (${currentNote.letter}), trên khuông ${CLEFS[currentNote.clef].name}.`;
+    feedback.innerHTML = `<strong>Chính xác!</strong> Đây là nốt ${pitchName}, trên khuông ${CLEFS[currentNote.clef].name}.`;
+    if (isReviewing && currentReviewQuestion) {
+      missedQuestions = missedQuestions.filter(
+        (question) => question.id !== currentReviewQuestion.id,
+      );
+      currentReviewQuestion = null;
+      updateReviewButton();
+    }
   } else {
-    feedback.innerHTML = `<strong>Chưa đúng rồi.</strong> Đáp án là ${NOTE_NAMES[currentNote.letter]} (${currentNote.letter}). Hãy thử ghi nhớ vị trí nốt trên khuông nhé.`;
+    let reviewMessage = "";
+    if (isReviewing && currentReviewQuestion) {
+      const missedIndex = missedQuestions.findIndex(
+        (question) => question.id === currentReviewQuestion.id,
+      );
+      if (missedIndex !== -1) {
+        const [missedQuestion] = missedQuestions.splice(missedIndex, 1);
+        missedQuestions.push(missedQuestion);
+      }
+      currentReviewQuestion = null;
+      updateReviewButton();
+      reviewMessage = " Câu này vẫn còn trong danh sách ôn tập.";
+    } else if (!currentQuestionWasMissed) {
+      missedQuestions.push({
+        id: nextMissedQuestionId,
+        clef: currentNote.clef,
+        step: currentNote.step,
+        type: questionType,
+      });
+      nextMissedQuestionId += 1;
+      currentQuestionWasMissed = true;
+      updateReviewButton();
+      reviewMessage = " Câu này đã được thêm vào danh sách ôn tập.";
+    }
+    feedback.innerHTML = `<strong>Chưa đúng rồi.</strong> Đáp án là nốt ${pitchName}. Hãy thử ghi nhớ vị trí nốt trên khuông nhé.${reviewMessage}`;
   }
   feedback.hidden = false;
   nextButton.hidden = false;
   noteButtons.forEach((button) => {
+    button.disabled = true;
+  });
+  pitchOptions.querySelectorAll(".pitch-option").forEach((button) => {
     button.disabled = true;
   });
   letterInput.disabled = true;
