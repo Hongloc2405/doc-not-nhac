@@ -147,6 +147,11 @@ h1 span {
   gap: 20px;
 }
 
+.control-stack {
+  display: grid;
+  gap: 15px;
+}
+
 .section-label {
   display: block;
   margin: 0;
@@ -157,6 +162,16 @@ h1 span {
   display: flex;
   gap: 5px;
   margin-top: 12px;
+  padding: 4px;
+  border-radius: 7px;
+  background: #f2f3ed;
+}
+
+.study-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
   padding: 4px;
   border-radius: 7px;
   background: #f2f3ed;
@@ -179,11 +194,26 @@ h1 span {
   transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
-.clef-choice:hover {
+.study-choice {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #65716a;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.clef-choice:hover,
+.study-choice:hover {
   color: var(--green-dark);
 }
 
-.clef-choice.is-active {
+.clef-choice.is-active,
+.study-choice.is-active {
   background: var(--card);
   color: var(--green-dark);
   box-shadow: 0 1px 5px rgb(30 48 45 / 11%);
@@ -226,6 +256,30 @@ h1 span {
   font-size: 28px;
   font-weight: 600;
   line-height: 1;
+}
+
+.review-button {
+  min-height: 27px;
+  margin-top: 5px;
+  padding: 0 8px;
+  border: 1px solid #dfe5dc;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--green);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.review-button:hover:not(:disabled) {
+  border-color: #9eb4a4;
+  background: var(--mint);
+}
+
+.review-button:disabled {
+  color: #a4aca4;
+  cursor: default;
 }
 
 .staff-panel {
@@ -292,10 +346,11 @@ h1 span {
 }
 
 .staff-hint {
-  fill: #b0b8ae;
+  fill: var(--green);
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 29px;
+  font-size: 34px;
   font-style: italic;
+  font-weight: 600;
 }
 
 .staff-caption {
@@ -310,6 +365,11 @@ h1 span {
   margin: 23px 0 0;
   padding: 0;
   border: 0;
+}
+
+.answer-section[hidden],
+.letter-field[hidden] {
+  display: none;
 }
 
 .answer-section legend {
@@ -345,6 +405,67 @@ h1 span {
   background: var(--mint);
   color: var(--green-dark);
   box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.pitch-options {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.pitch-option {
+  min-width: 0;
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  border: 1px solid #e3e7df;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.pitch-option:hover {
+  border-color: #9eb4a4;
+  transform: translateY(-1px);
+}
+
+.pitch-option.is-selected {
+  border-color: var(--green);
+  background: var(--mint);
+  box-shadow: inset 0 0 0 1px var(--green);
+}
+
+.pitch-option svg {
+  width: 100%;
+  max-width: 76px;
+  height: auto;
+  display: block;
+}
+
+.pitch-staff-lines line,
+.pitch-ledger-lines line {
+  stroke: #53625a;
+  stroke-width: 1;
+}
+
+.pitch-stem {
+  stroke: var(--green-dark);
+  stroke-width: 1.6;
+}
+
+.pitch-note-head {
+  fill: var(--green-dark);
+  stroke: var(--green-dark);
+  stroke-width: 0.8;
+}
+
+.pitch-clef {
+  fill: var(--green);
+  font-family: "Noto Music", "Segoe UI Symbol", "DejaVu Sans", serif;
 }
 
 .answer-bottom {
@@ -541,9 +662,19 @@ button:focus-visible {
     gap: 2px;
   }
 
+  .study-picker {
+    gap: 2px;
+  }
+
   .clef-choice {
     min-height: 35px;
     gap: 5px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .study-choice {
+    min-height: 32px;
     padding: 0 8px;
     font-size: 10px;
   }
@@ -567,6 +698,15 @@ button:focus-visible {
 
   .note-options {
     gap: 5px;
+  }
+
+  .pitch-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .pitch-option {
+    min-height: 60px;
   }
 
   .note-option {
