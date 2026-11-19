@@ -376,37 +376,6 @@ h1 span {
   padding: 0;
 }
 
-.note-options {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 11px;
-}
-
-.note-option {
-  min-height: 43px;
-  border: 1px solid #e3e7df;
-  border-radius: 6px;
-  background: #fff;
-  color: #47574f;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 150ms ease;
-}
-
-.note-option:hover {
-  border-color: #9eb4a4;
-  transform: translateY(-1px);
-}
-
-.note-option.is-selected {
-  border-color: var(--green);
-  background: var(--mint);
-  color: var(--green-dark);
-  box-shadow: inset 0 0 0 1px var(--green);
-}
-
 .pitch-options {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -696,10 +665,6 @@ button:focus-visible {
     font-size: 9px;
   }
 
-  .note-options {
-    gap: 5px;
-  }
-
   .pitch-options {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 5px;
@@ -707,11 +672,6 @@ button:focus-visible {
 
   .pitch-option {
     min-height: 60px;
-  }
-
-  .note-option {
-    min-height: 40px;
-    font-size: 12px;
   }
 
   .answer-bottom {
