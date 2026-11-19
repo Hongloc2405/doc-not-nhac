@@ -1,14 +1,4 @@
-const NOTE_NAMES = {
-  C: "Đô",
-  D: "Rê",
-  E: "Mi",
-  F: "Fa",
-  G: "Sol",
-  A: "La",
-  B: "Si",
-};
-
-const NOTE_LETTERS = Object.keys(NOTE_NAMES);
+const NOTE_LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
 const CLEFS = {
   treble: {
     name: "Khóa Sol",
@@ -28,7 +18,6 @@ const CLEFS = {
 
 const clefButtons = [...document.querySelectorAll(".clef-choice")];
 const studyButtons = [...document.querySelectorAll(".study-choice")];
-const noteButtons = [...document.querySelectorAll(".note-option")];
 const noteHead = document.querySelector("#note-head");
 const noteStem = document.querySelector("#note-stem");
 const ledgerLines = document.querySelector("#ledger-lines");
@@ -38,8 +27,6 @@ const staff = document.querySelector("#staff");
 const staffTitle = document.querySelector("#staff-title");
 const staffCaption = document.querySelector("#staff-caption");
 const answerForm = document.querySelector("#answer-form");
-const noteOptionsFieldset = document.querySelector("#note-options-fieldset");
-const noteOptionsLabel = document.querySelector("#note-options-label");
 const pitchOptionsFieldset = document.querySelector("#pitch-options-fieldset");
 const pitchOptions = document.querySelector("#pitch-options");
 const letterField = document.querySelector("#letter-field");
@@ -54,7 +41,6 @@ let selectedClef = "treble";
 let selectedStudyMode = "mixed";
 let currentNote = null;
 let questionType = "note";
-let selectedAnswer = "";
 let selectedStep = null;
 let score = 0;
 let questionNumber = 1;
@@ -201,7 +187,7 @@ function renderPitchOptions() {
     button.setAttribute("aria-pressed", "false");
     button.setAttribute(
       "aria-label",
-      `Chọn nốt ${NOTE_NAMES[note.letter]} quãng tám ${note.octave} trên ${clef.name}`,
+      `Chọn hình nốt ${index + 1} trên ${clef.name}`,
     );
     button.append(createPitchImage(step, clef));
     return button;
@@ -216,7 +202,7 @@ function renderNote() {
   const clef = CLEFS[clefKey];
   const step = randomInt(clef.minStep, clef.maxStep);
   const type = selectedStudyMode === "mixed"
-    ? ["note", "name", "letter"][randomInt(0, 2)]
+    ? ["note", "letter"][randomInt(0, 1)]
     : selectedStudyMode;
   presentQuestion({ clef: clefKey, step, type });
 }
@@ -229,10 +215,8 @@ function presentQuestion(question) {
   currentNote = { ...note, clef: clefKey, step };
   currentQuestionWasMissed = false;
   clefGlyph.textContent = clef.glyph;
-  noteOptionsFieldset.hidden = questionType === "name";
   pitchOptionsFieldset.hidden = questionType === "note";
   letterField.hidden = questionType === "letter";
-  noteOptionsLabel.textContent = "CHỌN TÊN NỐT";
 
   staff.classList.remove("is-interactive");
   staff.setAttribute("role", "img");
@@ -247,8 +231,8 @@ function presentQuestion(question) {
     staffHint.setAttribute("visibility", "hidden");
     renderStaffPitch(step);
   } else {
-    const clue = questionType === "name" ? NOTE_NAMES[note.letter] : note.letter;
-    staffTitle.textContent = questionType === "name" ? "TÊN NỐT ĐƯỢC CHO" : "KÝ HIỆU ĐƯỢC CHO";
+    const clue = note.letter;
+    staffTitle.textContent = "KÝ HIỆU ĐƯỢC CHO";
     staffCaption.textContent = "Chọn hình nốt tương ứng trong bảy lựa chọn bên dưới.";
     staff.setAttribute("aria-label", `${clef.name}, gợi ý ${clue}`);
     hideStaffNote();
@@ -265,12 +249,7 @@ function clearFeedback() {
 }
 
 function clearAnswer() {
-  selectedAnswer = "";
   selectedStep = null;
-  noteButtons.forEach((button) => {
-    button.classList.remove("is-selected");
-    button.setAttribute("aria-pressed", "false");
-  });
   pitchOptions.querySelectorAll(".pitch-option").forEach((button) => {
     button.classList.remove("is-selected");
     button.setAttribute("aria-pressed", "false");
@@ -280,9 +259,6 @@ function clearAnswer() {
   letterInput.removeAttribute("aria-invalid");
   clearFeedback();
   nextButton.hidden = true;
-  noteButtons.forEach((button) => {
-    button.disabled = false;
-  });
   letterInput.disabled = false;
   document.querySelector("#submit-button").disabled = false;
 }
@@ -367,21 +343,6 @@ pitchOptions.addEventListener("click", (event) => {
   clearFeedback();
 });
 
-noteButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    selectedAnswer = button.dataset.note;
-    noteButtons.forEach((choice) => {
-      const isSelected = choice === button;
-      choice.classList.toggle("is-selected", isSelected);
-      choice.setAttribute("aria-pressed", String(isSelected));
-    });
-    clearFeedback();
-    selectedAnswer = button.dataset.note;
-    button.classList.add("is-selected");
-    button.setAttribute("aria-pressed", "true");
-  });
-});
-
 letterInput.addEventListener("input", () => {
   letterInput.value = letterInput.value.replace(/[^a-g]/gi, "").slice(0, 1).toUpperCase();
   letterInput.removeAttribute("aria-invalid");
@@ -391,13 +352,11 @@ letterInput.addEventListener("input", () => {
 answerForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const enteredLetter = letterInput.value.trim().toUpperCase();
-  const needsName = questionType !== "name";
-  const needsPosition = questionType !== "note";
-  const needsLetter = questionType !== "letter";
+  const needsPosition = questionType === "letter";
+  const needsLetter = questionType === "note";
   const missing = [];
 
-  if (needsName && !selectedAnswer) missing.push("chọn tên nốt");
-  if (needsPosition && selectedStep === null) missing.push("chọn vị trí nốt trên khuông");
+  if (needsPosition && selectedStep === null) missing.push("chọn hình nốt");
   if (needsLetter && !enteredLetter) missing.push("nhập ký hiệu chữ cái");
 
   if (missing.length > 0) {
@@ -410,16 +369,14 @@ answerForm.addEventListener("submit", (event) => {
     return;
   }
 
-  const isCorrect = (!needsName || selectedAnswer === currentNote.letter)
-    && (!needsPosition || selectedStep === currentNote.step)
+  const isCorrect = (!needsPosition || selectedStep === currentNote.step)
     && (!needsLetter || enteredLetter === currentNote.letter);
   feedback.className = `feedback ${isCorrect ? "is-correct" : "is-incorrect"}`;
-  const pitchName = `${NOTE_NAMES[currentNote.letter]} (${currentNote.letter}${currentNote.octave})`;
 
   if (isCorrect) {
     score += 1;
     scoreDisplay.textContent = String(score).padStart(2, "0");
-    feedback.innerHTML = `<strong>Chính xác!</strong> Đây là nốt ${pitchName}, trên khuông ${CLEFS[currentNote.clef].name}.`;
+    feedback.innerHTML = `<strong>Chính xác!</strong> Ký hiệu cần tìm là ${currentNote.letter}.`;
     if (isReviewing && currentReviewQuestion) {
       missedQuestions = missedQuestions.filter(
         (question) => question.id !== currentReviewQuestion.id,
@@ -452,13 +409,10 @@ answerForm.addEventListener("submit", (event) => {
       updateReviewButton();
       reviewMessage = " Câu này đã được thêm vào danh sách ôn tập.";
     }
-    feedback.innerHTML = `<strong>Chưa đúng rồi.</strong> Đáp án là nốt ${pitchName}. Hãy thử ghi nhớ vị trí nốt trên khuông nhé.${reviewMessage}`;
+    feedback.innerHTML = `<strong>Chưa đúng rồi.</strong> Đáp án là ${currentNote.letter}. Hãy thử ghi nhớ vị trí nốt trên khuông nhé.${reviewMessage}`;
   }
   feedback.hidden = false;
   nextButton.hidden = false;
-  noteButtons.forEach((button) => {
-    button.disabled = true;
-  });
   pitchOptions.querySelectorAll(".pitch-option").forEach((button) => {
     button.disabled = true;
   });
